@@ -1,7 +1,8 @@
-import { Request, Response, RequestHandler } from 'express';
+import { Request, Response } from 'express';
 import { UserService } from './user.service';
 import { CustomError } from '../../middlewares/errorHandler';
 import { createSuccessResponse, createErrorResponse } from '../../utils/response';
+import { getPaginationOptions, buildSearchQuery, createPaginationResult } from '../../utils/queryUtils';
 
 export const UserController = {
   createUser: async (req: Request, res: Response): Promise<void> => {
@@ -17,38 +18,24 @@ export const UserController = {
 
   getAllUsers: async (req: Request, res: Response): Promise<void> => {
     try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-      const skip = (page - 1) * limit;
+      const { skip, limit, page } = getPaginationOptions(req);
 
-      // Build search query
-      const searchQuery: any = {};
-      
-      if (req.query.name) searchQuery.name = { $regex: req.query.name, $options: 'i' };
-      if (req.query.email) searchQuery.email = { $regex: req.query.email, $options: 'i' };
-      if (req.query.role) searchQuery.role = { $regex: req.query.role, $options: 'i' };
-      if (req.query.department) searchQuery.department = { $regex: req.query.department, $options: 'i' };
-      if (req.query.active !== undefined) searchQuery.active = req.query.active === 'true';
+      const searchOptions = {
+        name: { type: 'string' as const, field: 'name', regex: true },
+        email: { type: 'string' as const, field: 'email', regex: true },
+        role: { type: 'string' as const, field: 'role', regex: true },
+        department: { type: 'string' as const, field: 'department', regex: true },
+        active: { type: 'boolean' as const, field: 'active' }
+      };
+
+      const searchQuery = buildSearchQuery(req, searchOptions);
 
       const [users, total] = await Promise.all([
         UserService.getAllUsers(skip, limit, searchQuery),
         UserService.countUsers(searchQuery)
       ]);
 
-      const totalPages = Math.ceil(total / limit);
-
-      const paginationData = {
-        docs: users,
-        totalDocs: total,
-        limit,
-        page,
-        totalPages,
-        pagingCounter: skip + 1,
-        hasPrevPage: page > 1,
-        hasNextPage: page < totalPages,
-        prevPage: page > 1 ? page - 1 : null,
-        nextPage: page < totalPages ? page + 1 : null
-      };
+      const paginationData = createPaginationResult(users, total, { page, limit });
 
       res.status(200).json(createSuccessResponse('Successfully gets users', paginationData));
     } catch (error) {

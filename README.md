@@ -100,6 +100,38 @@ A robust and scalable Express.js application built with TypeScript and MongoDB, 
 - `PUT /api/users/:id` - Update user
 - `DELETE /api/users/:id` - Delete user
 
+### Products
+- `POST /api/products` - Create a new product
+- `GET /api/products` - Get all products (with pagination and search)
+  - Query params:
+    - `page`: Page number (default: 1)
+    - `limit`: Items per page (default: 10)
+    - `name`: Filter by name
+    - `techStack`: Filter by tech stack
+    - `price`: Filter by price
+    - `sales`: Filter by sales count
+    - `reviews`: Filter by review count
+    - `likes`: Filter by likes count
+- `GET /api/products/:id` - Get product by ID
+- `PUT /api/products/:id` - Update product
+- `DELETE /api/products/:id` - Delete product
+
+### Services
+- `POST /api/services` - Create a new service
+- `GET /api/services` - Get all services (with pagination and search)
+  - Query params:
+    - `page`: Page number (default: 1)
+    - `limit`: Items per page (default: 10)
+    - `title`: Filter by title
+    - `category`: Filter by category
+    - `status`: Filter by status
+    - `price`: Filter by price
+    - `rating`: Filter by rating
+    - `reviewCount`: Filter by review count
+- `GET /api/services/:id` - Get service by ID
+- `PUT /api/services/:id` - Update service
+- `DELETE /api/services/:id` - Delete service
+
 ### File Upload
 - `POST /api/upload` - Upload file(s)
 - `GET /api/upload/:filename` - Get uploaded file
@@ -112,6 +144,8 @@ src/
 ├── modules/          # Feature modules
 │   ├── auth/         # Authentication module
 │   ├── users/        # User module
+│   ├── products/     # Product management module
+│   ├── services/     # Service management module
 │   └── upload/       # File upload module
 ├── middlewares/      # Custom middleware
 │   ├── auth/         # Authentication middleware

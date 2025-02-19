@@ -86,13 +86,14 @@ export const uploadFile = async (
     const client = getS3Client();
     
     const fileName = name
-      ? `${name}.${file.originalname.split('.').pop()}`
-      : file.originalname;
+      ? `${Date.now()}_${name}.${file.originalname.split('.').pop()}`
+      : `${Date.now()}_${file.originalname}`;
 
     const params: S3UploadParams = {
       Bucket: bucketName,
       Key: `live/${folder}/${fileName}`,
       Body: file.buffer,
+      ContentType: file.mimetype,
       ACL: 'public-read' as ObjectCannedACL
     };
 
