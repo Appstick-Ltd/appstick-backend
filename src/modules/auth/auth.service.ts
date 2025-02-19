@@ -1,8 +1,22 @@
 import jwt from 'jsonwebtoken';
 import { User } from '../users/user.model';
 import { LoginCredentials, RegisterCredentials, AuthResponse } from './auth.interface';
+import { IUser } from '../users/user.interface';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+const createUserResponse = (user: IUser) => ({
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  department: user.department,
+  active: user.active,
+  profileImage: user.profileImage,
+  bio: user.bio,
+  address: user.address,
+  phone: user.phone
+});
 
 export const AuthService = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
@@ -22,17 +36,7 @@ export const AuthService = {
       expiresIn: '30d'
     });
 
-    const userResponse = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      department: user.department,
-      active: user.active,
-      profileImage: user.profileImage,
-      bio: user.bio
-    };
-
+    const userResponse = createUserResponse(user);
     return { token, user: { ...userResponse, _id: user._id?.toString() ?? String(userResponse._id) } };
   },
 
@@ -50,17 +54,7 @@ export const AuthService = {
       expiresIn: '30d'
     });
 
-    const userResponse = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      department: user.department,
-      active: user.active,
-      profileImage: user.profileImage,
-      bio: user.bio
-    };
-
+    const userResponse = createUserResponse(user);
     return { token, user: { ...userResponse, _id: user._id?.toString() ?? String(userResponse._id) } };
   }
 };

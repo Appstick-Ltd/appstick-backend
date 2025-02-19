@@ -24,13 +24,15 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'manager', 'employee'],
-      default: 'employee'
+      enum: ['admin', 'manager', 'employee', 'customer'],
+      default: 'customer'
     },
     department: {
       type: String,
       enum: ['design', 'development', 'marketing', 'sales'],
-      required: [true, 'Please specify department']
+      required: function(this: { role: string }) {
+        return ['admin', 'manager', 'employee'].includes(this.role);
+      }
     },
     active: {
       type: Boolean,
@@ -43,6 +45,15 @@ const userSchema = new mongoose.Schema(
     bio: {
       type: String,
       maxlength: 500,
+      default: null
+    },
+    // Customer specific fields
+    address: {
+      type: String,
+      default: null
+    },
+    phone: {
+      type: String,
       default: null
     }
   },
