@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import userRoutes from '../modules/users/user.route';
 import authRoutes from '../modules/auth/auth.route';
+import uploadRoutes from '../modules/upload/upload.route';
 
 interface RouteConfig {
   path: string;
@@ -8,16 +9,23 @@ interface RouteConfig {
   description?: string;
 }
 
+const API_PREFIX = process.env.API_PREFIX || '/api';
+
 const routes: RouteConfig[] = [
   {
-    path: '/api/auth',
+    path: `${API_PREFIX}/auth`,
     router: authRoutes,
     description: 'Authentication routes for login and registration'
   },
   {
-    path: '/api/users',
+    path: `${API_PREFIX}/users`,
     router: userRoutes,
     description: 'User management routes'
+  },
+  {
+    path: `${API_PREFIX}/upload`,
+    router: uploadRoutes,
+    description: 'File upload routes'
   }
 ];
 

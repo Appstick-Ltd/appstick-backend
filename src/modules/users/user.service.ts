@@ -6,16 +6,16 @@ export const UserService = {
     return await User.create(userData);
   },
 
-  getAllUsers: async (skip: number = 0, limit: number = 10): Promise<IUser[]> => {
-    return await User.find()
+  getAllUsers: async (skip: number = 0, limit: number = 10, searchQuery: any = {}): Promise<IUser[]> => {
+    return await User.find(searchQuery)
       .select('-password')
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
   },
 
-  countUsers: async (): Promise<number> => {
-    return await User.countDocuments();
+  countUsers: async (searchQuery: any = {}): Promise<number> => {
+    return await User.countDocuments(searchQuery);
   },
 
   getUserById: async (id: string): Promise<IUser | null> => {
@@ -29,4 +29,4 @@ export const UserService = {
   deleteUser: async (id: string): Promise<IUser | null> => {
     return await User.findByIdAndDelete(id);
   },
-}; 
+};

@@ -1,6 +1,7 @@
-import { Document } from 'mongoose';
+import { Types } from 'mongoose';
 
-export interface IUser extends Document {
+export interface IUser {
+  _id: Types.ObjectId;
   name: string;
   email: string;
   password: string;
@@ -12,4 +13,4 @@ export interface IUser extends Document {
   createdAt: Date;
   updatedAt: Date;
   matchPassword(enteredPassword: string): Promise<boolean>;
-} 
+}

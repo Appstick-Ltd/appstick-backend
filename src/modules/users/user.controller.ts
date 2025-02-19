@@ -21,9 +21,18 @@ export const UserController = {
       const limit = parseInt(req.query.limit as string) || 10;
       const skip = (page - 1) * limit;
 
+      // Build search query
+      const searchQuery: any = {};
+      
+      if (req.query.name) searchQuery.name = { $regex: req.query.name, $options: 'i' };
+      if (req.query.email) searchQuery.email = { $regex: req.query.email, $options: 'i' };
+      if (req.query.role) searchQuery.role = { $regex: req.query.role, $options: 'i' };
+      if (req.query.department) searchQuery.department = { $regex: req.query.department, $options: 'i' };
+      if (req.query.active !== undefined) searchQuery.active = req.query.active === 'true';
+
       const [users, total] = await Promise.all([
-        UserService.getAllUsers(skip, limit),
-        UserService.countUsers()
+        UserService.getAllUsers(skip, limit, searchQuery),
+        UserService.countUsers(searchQuery)
       ]);
 
       const totalPages = Math.ceil(total / limit);
@@ -93,4 +102,4 @@ export const UserController = {
       res.status(err.statusCode).json(createErrorResponse(err.message));
     }
   },
-}; 
+};

@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../modules/users/user.model';
 import { IUser } from '../modules/users/user.interface';
 import { createErrorResponse } from '../utils/response';
+import { Types } from 'mongoose';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -10,7 +11,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 declare global {
   namespace Express {
     interface Request {
-      user?: IUser;
+      user?: IUser & { _id: Types.ObjectId };
     }
   }
 }
@@ -62,6 +63,24 @@ export const protect: RequestHandler = async (
 };
 
 // Role authorization middleware
+// Check if user has access to the profile
+export const isOwnProfileOrAdmin: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
+  if (!req.user) {
+    res.status(401).json(
+      createErrorResponse('Not authorized to access this route')
+    );
+    return;
+  }
+
+  if (req.user._id.toString() === req.params.id || req.user.role === 'admin') {
+    next();
+  } else {
+    res.status(403).json(
+      createErrorResponse('Not authorized to access this profile')
+    );
+  }
+};
+
 export const authorize = (...roles: string[]): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
@@ -80,4 +99,4 @@ export const authorize = (...roles: string[]): RequestHandler => {
 
     next();
   };
-}; 
+};

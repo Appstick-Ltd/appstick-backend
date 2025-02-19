@@ -1,22 +1,30 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { UserController } from './user.controller';
-import { protect, authorize } from '../../middlewares/authMiddleware';
+import { protect, authorize, isOwnProfileOrAdmin } from '../../middlewares/authMiddleware';
+import { IUser } from './user.interface';
+import { Types } from 'mongoose';
+
+interface AuthenticatedRequest extends Request {
+  user?: IUser & { _id: Types.ObjectId };
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: IUser & { _id: Types.ObjectId };
+    }
+  }
+}
 
 const router = Router();
 
-// Public routes
-router.get('/:id', UserController.getUserById);
-
-// Protected routes - require JWT authentication
-router.get('/profile', protect, UserController.getUserById);
+// Protected routes - users can access their own profile
+router.route('/:id')
+  .get(protect, UserController.getUserById)
+  .put(protect, isOwnProfileOrAdmin, UserController.updateUser)
+  .delete(protect, isOwnProfileOrAdmin, UserController.deleteUser);
 
 // Routes accessible by admin and managers
 router.get('/', protect, authorize('admin', 'manager'), UserController.getAllUsers);
-
-// Routes accessible only by admin
-router.route('/admin/:id')
-  .get(protect, authorize('admin'), UserController.getUserById)
-  .put(protect, authorize('admin'), UserController.updateUser)
-  .delete(protect, authorize('admin'), UserController.deleteUser);
 
 export default router;

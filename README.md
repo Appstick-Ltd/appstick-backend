@@ -1,65 +1,108 @@
-# Express TypeScript MongoDB API
+# Appstick Backend
 
-A modular Express.js application built with TypeScript and MongoDB, following best practices for scalability and maintainability.
+A robust and scalable Express.js application built with TypeScript and MongoDB, following industry best practices for modern web API development.
 
 ## Features
 
-- TypeScript support
-- MongoDB integration with Mongoose
-- Modular architecture
-- CRUD operations for users
-- Error handling middleware
-- Logging with Winston
-- ESLint and Prettier configuration
-- Environment variable support
+- **TypeScript Integration** - Full TypeScript support with strict type checking
+- **MongoDB & Mongoose** - Robust database integration with Mongoose ODM
+- **Modular Architecture** - Well-organized, maintainable code structure
+- **User Management** - Complete CRUD operations with pagination and search
+- **File Upload** - Secure file upload functionality
+- **Authentication** - Secure user authentication system
+- **Error Handling** - Centralized error handling middleware
+- **Logging** - Comprehensive logging with Winston
+- **Code Quality** - ESLint and Prettier configuration
+- **Environment Management** - Secure environment variable handling
 
 ## Prerequisites
 
 - Node.js (v14 or higher)
-- MongoDB installed and running locally
+- MongoDB (v4.4 or higher)
 - TypeScript knowledge
+- npm or yarn package manager
 
 ## Installation
 
-1. Clone the repository
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd appstick-backend
+   ```
+
 2. Install dependencies:
    ```bash
    npm install
    ```
-3. Create a `.env` file in the root directory with the following variables:
-   ```
+
+3. Configure environment variables:
+   Create a `.env` file in the root directory with the following variables:
+   ```env
+   # Server Configuration
    PORT=3000
-   MONGODB_URI=mongodb://localhost:27017/express-ts-app
    NODE_ENV=development
+
+   # MongoDB Configuration
+   MONGODB_URI=mongodb://localhost:27017/express-ts-app
+
+   # JWT Configuration
+   JWT_SECRET=your-secret-key
+   JWT_EXPIRES_IN=24h
+
+   # File Upload Configuration
+   UPLOAD_DIR=uploads
+   MAX_FILE_SIZE=5242880 # 5MB
    ```
 
 ## Development
 
-Start the development server:
-```bash
-npm run dev
-```
+1. Start development server:
+   ```bash
+   npm run dev
+   ```
 
-## Build and Production
+2. Run type checking in watch mode:
+   ```bash
+   npm run type-check:watch
+   ```
 
-Build the application:
-```bash
-npm run build
-```
+## Production
 
-Start the production server:
-```bash
-npm start
-```
+1. Build the application:
+   ```bash
+   npm run build
+   ```
 
-## API Endpoints
+2. Start production server:
+   ```bash
+   npm start
+   ```
+
+## API Documentation
+
+### Authentication
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - User login
+- `POST /api/auth/refresh` - Refresh access token
 
 ### Users
-- POST /api/users - Create a new user
-- GET /api/users - Get all users
-- GET /api/users/:id - Get a user by ID
-- PUT /api/users/:id - Update a user
-- DELETE /api/users/:id - Delete a user
+- `POST /api/users` - Create a new user
+- `GET /api/users` - Get all users (with pagination and search)
+  - Query params:
+    - `page`: Page number (default: 1)
+    - `limit`: Items per page (default: 10)
+    - `name`: Filter by name
+    - `email`: Filter by email
+    - `role`: Filter by role
+    - `department`: Filter by department
+    - `active`: Filter by active status
+- `GET /api/users/:id` - Get user by ID
+- `PUT /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user
+
+### File Upload
+- `POST /api/upload` - Upload file(s)
+- `GET /api/upload/:filename` - Get uploaded file
 
 ## Project Structure
 
@@ -67,13 +110,47 @@ npm start
 src/
 ├── config/           # Configuration files
 ├── modules/          # Feature modules
-│   └── users/        # User module
+│   ├── auth/         # Authentication module
+│   ├── users/        # User module
+│   └── upload/       # File upload module
 ├── middlewares/      # Custom middleware
+│   ├── auth/         # Authentication middleware
+│   ├── error/        # Error handling
+│   └── logger/       # Request logging
 ├── utils/            # Utility functions
 ├── app.ts           # Express app setup
 └── server.ts        # Application entry point
 ```
 
+## Error Handling
+
+The API uses a centralized error handling mechanism with custom error classes:
+- `400` - Bad Request
+- `401` - Unauthorized
+- `403` - Forbidden
+- `404` - Not Found
+- `500` - Internal Server Error
+
+## Testing
+
+Run tests:
+```bash
+npm test
+```
+
+Run tests with coverage:
+```bash
+npm run test:coverage
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
 ## License
 
-ISC 
+This project is licensed under the ISC License.
